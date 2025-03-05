@@ -3,7 +3,5 @@
   "version": "0.1.0",
   "description": "Node.js dependencies for Travel Booker",
   "private": true,
-  "dependencies": {
-    "browser-use": "^0.1.36"
-  }
+  "dependencies": {}
 } 

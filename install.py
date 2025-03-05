@@ -14,36 +14,25 @@ def check_python_version():
         return False
     return True
 
-def check_node_installed():
-    """Check if Node.js is installed."""
-    try:
-        subprocess.run(["node", "--version"], check=True, capture_output=True)
-        return True
-    except (subprocess.SubprocessError, FileNotFoundError):
-        print("Error: Node.js is not installed or not in PATH.")
-        print("Please install Node.js from https://nodejs.org/")
-        return False
-
 def install_python_dependencies():
-    """Install Python dependencies."""
+    """Install Python dependencies including browser-use."""
     print("Installing Python dependencies...")
     try:
         subprocess.run([sys.executable, "-m", "pip", "install", "-r", "requirements.txt"], check=True)
         print("Python dependencies installed successfully.")
+        
+        # Ensure browser-use is installed
+        try:
+            import browser_use
+            print("browser-use is already installed.")
+        except ImportError:
+            print("Installing browser-use package...")
+            subprocess.run([sys.executable, "-m", "pip", "install", "browser-use"], check=True)
+            print("browser-use installed successfully.")
+        
         return True
     except subprocess.SubprocessError as e:
         print(f"Error installing Python dependencies: {e}")
-        return False
-
-def install_node_dependencies():
-    """Install Node.js dependencies."""
-    print("Installing Node.js dependencies...")
-    try:
-        subprocess.run(["npm", "install"], check=True)
-        print("Node.js dependencies installed successfully.")
-        return True
-    except subprocess.SubprocessError as e:
-        print(f"Error installing Node.js dependencies: {e}")
         return False
 
 def setup_env_file():
@@ -62,11 +51,11 @@ def main():
     print("=== Travel Booker Installation ===")
     
     # Check requirements
-    if not check_python_version() or not check_node_installed():
+    if not check_python_version():
         sys.exit(1)
     
     # Install dependencies
-    if not install_python_dependencies() or not install_node_dependencies():
+    if not install_python_dependencies():
         sys.exit(1)
     
     # Setup environment file

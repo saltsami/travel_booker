@@ -3,6 +3,7 @@
 Example script to demonstrate the Travel Booker functionality.
 """
 import os
+import importlib
 from dotenv import load_dotenv
 from travel_booker.core.ai_parser import parse_flight_request, parse_hotel_request
 from travel_booker.browser_automation.flight_booker import book_flight
@@ -20,6 +21,15 @@ def main():
         print("Error: OPENAI_API_KEY environment variable is not set.")
         print("Please set it using:")
         print("  export OPENAI_API_KEY=your-api-key")
+        return
+
+    # Check if browser-use is installed
+    try:
+        importlib.import_module('browser_use')
+    except ImportError:
+        print("Error: browser-use package is not installed.")
+        print("Please install it using:")
+        print("  pip install browser-use")
         return
 
     # Example 1: Book a flight

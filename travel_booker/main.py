@@ -5,6 +5,7 @@ Travel Booker MVP - Main Entry Point
 import os
 import sys
 import typer
+import importlib
 from typing import Optional
 from dotenv import load_dotenv
 
@@ -25,23 +26,21 @@ def setup_environment():
         typer.echo("  export OPENAI_API_KEY=your-api-key")
         return False
 
-    # Check if Node.js is installed (required for browser-use)
+    # Check if browser-use is installed
     try:
-        import subprocess
-        subprocess.run(["node", "--version"], check=True, capture_output=True)
-    except (subprocess.SubprocessError, FileNotFoundError):
-        typer.echo("Error: Node.js is not installed or not in PATH.")
-        typer.echo("Please install Node.js from https://nodejs.org/")
+        importlib.import_module('browser_use')
+    except ImportError:
+        typer.echo("Error: browser-use package is not installed.")
+        typer.echo("Please install it using:")
+        typer.echo("  pip install browser-use")
         return False
 
-    # Todo: Check if browser-use is installed
     return True
 
 @app.command()
 def book_flight(
-    request: str = typer.Option(
-        ..., 
-        prompt="Please describe your flight booking request",
+    request: Optional[str] = typer.Argument(
+        None,
         help="Natural language description of flight booking requirements"
     )
 ):
@@ -50,6 +49,10 @@ def book_flight(
     """
     from travel_booker.core.ai_parser import parse_flight_request
     from travel_booker.browser_automation.flight_booker import book_flight
+
+    # If no request provided via argument, prompt for it
+    if not request:
+        request = typer.prompt("Please describe your flight booking request")
 
     # Parse the flight booking request
     booking_details = parse_flight_request(request)
@@ -67,9 +70,8 @@ def book_flight(
 
 @app.command()
 def book_hotel(
-    request: str = typer.Option(
-        ..., 
-        prompt="Please describe your hotel booking request",
+    request: Optional[str] = typer.Argument(
+        None,
         help="Natural language description of hotel booking requirements"
     )
 ):
@@ -78,6 +80,10 @@ def book_hotel(
     """
     from travel_booker.core.ai_parser import parse_hotel_request
     from travel_booker.browser_automation.hotel_booker import book_hotel
+
+    # If no request provided via argument, prompt for it
+    if not request:
+        request = typer.prompt("Please describe your hotel booking request")
 
     # Parse the hotel booking request
     booking_details = parse_hotel_request(request)
